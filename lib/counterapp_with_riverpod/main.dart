@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   //App全体でRiverpodを使用するためにProviderScopeで囲う
-  runApp(const ProviderScope(child: MyApp())); 
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 //StateProviderを用いてカウンターの状態を管理。初期値は0
@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo with Riverpod',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      home: const MyHomePage(),// ホームページとしてMyHomePageを設定
+      home: const MyHomePage(), // ホームページとしてMyHomePageを設定
     );
   }
 }
@@ -34,24 +34,27 @@ class MyHomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     //Scaffoldを返す。これにより、アプリの主要な部分を定義
     return Scaffold(
-      //AppBarのタイトルを設定
-      appBar: AppBar(
-        title: const Text('Flutter Demo with Riverpod'),
-        actions: [
-          ResetButton(ref: ref), // ResetButtonをAppBarに配置
-        ],
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,//真ん中に配置
-          children: <Widget>[
-            Text('You have pushed the button this many times:'),
-            CounterDisplay(),//カウント表示
-          ],
+        //AppBarのタイトルを設定
+        appBar: AppBar(
+          title: const Text('Flutter Demo with Riverpod'),
         ),
-      ),
-      floatingActionButton: IncrementButton(ref: ref),//加算ボタン
-    );
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, //真ん中に配置
+            children: <Widget>[
+              Text('You have pushed the button this many times:'),
+              CounterDisplay(), //カウント表示
+            ],
+          ),
+        ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            IncrementButton(ref: ref), //加算
+            ResetButton(ref: ref), //0にする
+            DecrementButton(ref: ref), //減算
+          ],
+        ));
   }
 }
 
@@ -82,9 +85,26 @@ class IncrementButton extends StatelessWidget {
     //加算ボタンを返す
     return FloatingActionButton(
       key: const Key('count_floatingActionButton'),
-       //ボタンが押された時、カウンター値を増加,readはその時点での値を取得
+      //ボタンが押された時、カウンター値を増加,readはその時点での値を取得
       onPressed: () => ref.read(counterProvider.notifier).state++,
       child: const Icon(Icons.add),
+    );
+  }
+}
+
+//カウントをインクリメントするクラス
+class DecrementButton extends StatelessWidget {
+  final WidgetRef ref;
+  const DecrementButton({Key? key, required this.ref}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    //加算ボタンを返す
+    return FloatingActionButton(
+      key: const Key('count_floatingActionButton'),
+      //ボタンが押された時、カウンター値を増加,readはその時点での値を取得
+      onPressed: () => ref.read(counterProvider.notifier).state--,
+      child: const Icon(Icons.remove),
     );
   }
 }
@@ -97,11 +117,11 @@ class ResetButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //カウントを0にするボタンを返す
-    return IconButton(
-      key: const Key('reset_iconButton'),
-      icon: const Icon(Icons.refresh), 
+    return FloatingActionButton(
+      key: const Key('reset_floatingactionButton'),
       // ボタンが押された時、カウンター値を0にリセット
-      onPressed: () => ref.read(counterProvider.notifier).state = 0, 
+      onPressed: () => ref.read(counterProvider.notifier).state = 0,
+      child: const Icon(Icons.refresh),
     );
   }
 }
